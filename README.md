@@ -9,7 +9,7 @@ Native, approachable ADB controls for iPhone, with a lightweight Android TV comp
 - **iPhone (ios/)**: SwiftUI dashboard, ADB-over-TCP client, RSA identity stored in iOS Keychain, foreground reconnect, APK installation with the native Files picker, app manager, cleanup, defaults and diagnostics.
 - **Sony privacy cleanup**: Optional package candidates from Clean Your TV examples. Only installed packages are shown. Nothing is disabled automatically. A recovery record precedes each disable.
 - **Default app controls**: Request the browser role, request a Home activity and verify its resolver, launch a Live TV app. TV button remapping is firmware-specific.
-- **Offline error help**: Readable guidance for common ADB/APK failures. No logs leave the phone for AI processing in this version.
+- **Offline error help**: Readable guidance for common ADB/APK failures plus an optional on-device Apple Foundation Models explainer when built with the iOS 26+ SDK and available on the device. Logs are not uploaded.
 - **Android TV (androidtv/)**: Native Leanback companion with mDNS discovery and read-only status. No privileged command execution or remote shell.
 
 ## Android TV 12 compatibility
@@ -40,7 +40,7 @@ Install XcodeGen and use Xcode 16 or later:
     xcodegen generate
     xcodebuild -project BridgeDeck.xcodeproj -scheme BridgeDeck -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
 
-The workflow produces an unsigned IPA for signing with the user's own certificate. No keys are embedded. SwiftADB is pinned to a source revision under its Apache-2.0 licensing option.
+The workflow produces an unsigned IPA for signing with the user's own certificate. No keys are embedded. SwiftADB is locally vendored from source revision 1044bec under its Apache-2.0 licensing option, with the unavailable Security SDK identity call disabled for legacy TCP-only use.
 
 ### Android TV
 
@@ -53,7 +53,7 @@ The workflow uploads a test/debug APK. Debug signing may vary across CI runs. Fo
 
 - Original Clean Your TV: https://github.com/Gathin23/cleanyourtv (MIT license, by Gathin and contributors).
 - Upstream Sony device notes: https://github.com/Gathin23/cleanyourtv/tree/main/docs/devices
-- SwiftADB: https://github.com/akshaynexus/SwiftADB (GPL-3.0-or-later OR Apache-2.0, external Swift Package using Apache-2.0 alternative).
+- SwiftADB: https://github.com/akshaynexus/SwiftADB (GPL-3.0-or-later OR Apache-2.0, vendored Swift Package using Apache-2.0 alternative). BridgeDeck's local compatibility patch disables its broken TLS identity path; TLS pairing is not claimed as functional.
 - Official Android ADB: https://developer.android.com/tools/adb
 
 ## Next work

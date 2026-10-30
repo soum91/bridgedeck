@@ -407,6 +407,8 @@ private struct DiagnosticsScreen: View {
     @EnvironmentObject private var store: BridgeStore
     @State private var command = "getprop ro.product.cpu.abi"
     @State private var advanced = false
+    @State private var aiResponse = ""
+    @State private var aiBusy = false
     var body: some View {
         Form {
             Section("AI-style error guidance") {
@@ -414,7 +416,21 @@ private struct DiagnosticsScreen: View {
                 Label(advice.title, systemImage: "sparkles")
                     .font(.headline)
                 ForEach(advice.steps, id: \.self) { Text("• " + $0).font(.subheadline) }
-                Text("Initial release uses local diagnostic rules; it does not send logs to an AI service.")
+                Button {
+                    aiBusy = true
+                    Task {
+                        aiResponse = await OnDeviceAI.explain(store.lastOutput)
+                        aiBusy = false
+                    }
+                } label: {
+                    Label("Explain with on-device AI", systemImage: "sparkles")
+                }
+                .disabled(aiBusy)
+                if aiBusy { ProgressView("Analyzing on iPhone…") }
+                if !aiResponse.isEmpty {
+                    Text(aiResponse).textSelection(.enabled)
+                }
+                Text("On supported iPhones, Apple Intelligence can analyze locally. A rule-based fallback works without it. No logs are uploaded.")
                     .font(.caption).foregroundStyle(.secondary)
             }
             Section("Latest output") {

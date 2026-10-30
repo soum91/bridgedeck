@@ -5,8 +5,7 @@ options:
     iOS: "17.0"
 packages:
   SwiftADB:
-    url: https://github.com/akshaynexus/SwiftADB.git
-    revision: 1044bec57ee3aef4b7c556fce2e76b24257769e5
+    path: ../vendor/SwiftADB
 targets:
   BridgeDeck:
     type: application
