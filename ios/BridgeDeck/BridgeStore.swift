@@ -42,6 +42,7 @@ enum CleanupCatalog {
             "com.google.android.apps.tv.launcherx",
             "com.google.android.tvlauncher",
             "com.google.android.leanbacklauncher",
+            "com.soum91.bridgedeck.tv",
             "com.sony.dtv.tvx", "com.sony.dtv.tvapi",
             "com.sony.dtv.sonysystemservice", "com.sony.dtv.imeproxy"
         ]
@@ -115,7 +116,7 @@ enum ErrorAdvisor {
         }
         return ("Command output", [
             "Review the exact error text and the command that produced it.",
-            "Use the Advanced tab to copy a redacted report for deeper analysis."
+            "Open ADB Commands for common checks, or copy the result for deeper analysis."
         ])
     }
 }
@@ -139,6 +140,7 @@ final class BridgeStore: ObservableObject {
     @Published var firmware = ""
     @Published var lastOutput = "Connect to your TV to get started."
     @Published var installedPackages: [String] = []
+    @Published var userPackages: [String] = []
     @Published var enabledPackages: Set<String> = []
     @Published var disabledPackages: Set<String> = []
     @Published var mostRecentRecovery = ""
@@ -178,6 +180,20 @@ final class BridgeStore: ObservableObject {
         lastOutput = "Disconnected."
     }
 
+    func ensureConnection(host: String, port: Int) async {
+        guard !busy, !connecting, !host.isEmpty else { return }
+        if connected {
+            do {
+                let response = try await adb.shell("echo BRIDGEDECK_READY")
+                if response.contains("BRIDGEDECK_READY") { return }
+            } catch {
+                // The old TCP session may have expired while iOS was suspended.
+            }
+            connected = false
+        }
+        await connect(host: host, port: port)
+    }
+
     func run(_ command: String, name: String = "Command") async {
         guard connected, !busy else { return }
         busy = true
@@ -194,9 +210,11 @@ final class BridgeStore: ObservableObject {
         guard connected else { return }
         do {
             let all = try await adb.shell("pm list packages")
+            let userInstalled = try await adb.shell("pm list packages -3")
             let enabled = try await adb.shell("pm list packages -e")
             let disabled = try await adb.shell("pm list packages -d")
             installedPackages = parsePackages(all)
+            userPackages = parsePackages(userInstalled)
             enabledPackages = Set(parsePackages(enabled))
             disabledPackages = Set(parsePackages(disabled))
             lastError = ""
