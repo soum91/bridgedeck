@@ -5,5 +5,28 @@
   "description": "Native iPhone ADB dashboard with discovery, app management, careful privacy cleanup and guided troubleshooting. Unsigned IPA releases for FlareStore or EmberSign.",
   "sourceURL": "https://raw.githubusercontent.com/soum91/bridgedeck/main/repo.json",
   "iconURL": "https://raw.githubusercontent.com/soum91/bridgedeck/main/ios/BridgeDeck/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
-  "apps": []
+  "apps": [
+    {
+      "name": "BridgeDeck",
+      "bundleIdentifier": "com.soum91.bridgedeck",
+      "developerName": "soum91",
+      "subtitle": "Control Android TV without typing ADB commands",
+      "localizedDescription": "Native iPhone dashboard for ADB app management, approved package cleanup, browser/Home preferences and diagnostics. The Android TV companion advertises discovery but does not bypass ADB authorization.",
+      "category": "utilities",
+      "iconURL": "https://raw.githubusercontent.com/soum91/bridgedeck/main/ios/BridgeDeck/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
+      "versions": [
+        {
+          "version": "0.1.0.5",
+          "buildVersion": "5",
+          "date": "2026-10-30",
+          "localizedDescription": "Native ADB interface, TV discovery, app manager, recovery-first cleanup and readable errors. Requires authorized ADB over your local network.",
+          "changelog": "Initial unsigned iPhone prerelease. BridgeDeck TV companion is available separately in EmberTV.",
+          "downloadURL": "https://github.com/soum91/bridgedeck/releases/download/v0.1.0.5/BridgeDeck-unsigned.ipa",
+          "size": 767175,
+          "sha256": "f2307c46ca9089252b93f5ee39ccb0984afe754c648395ad62e6fb369158869b",
+          "minOSVersion": "17.0"
+        }
+      ]
+    }
+  ]
 }
