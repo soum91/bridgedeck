@@ -10,8 +10,8 @@ android {
         applicationId = "com.soum91.bridgedeck.tv"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = (project.findProperty("BRIDGEDECK_BUILD_NUMBER") as String?)?.toIntOrNull() ?: 1
+        versionName = "0.1.0.$versionCode"
     }
     buildTypes {
         release {
