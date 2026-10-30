@@ -1,0 +1,37 @@
+name: BridgeDeck iOS
+on:
+  push:
+    branches: [main]
+    paths:
+      - "ios/**"
+      - ".github/workflows/ios.yml"
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Generate project
+        run: xcodegen generate --spec ios/project.yml --project ios
+      - name: Build iPhone app
+        run: |
+          xcodebuild -project ios/BridgeDeck.xcodeproj -scheme BridgeDeck \
+            -configuration Release -sdk iphoneos \
+            -derivedDataPath "$RUNNER_TEMP/BridgeDeckBuild" \
+            CODE_SIGNING_ALLOWED=NO build
+      - name: Package unsigned IPA for user signing
+        run: |
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$RUNNER_TEMP/BridgeDeckBuild/Build/Products/Release-iphoneos/BridgeDeck.app" "$RUNNER_TEMP/Payload/"
+          cd "$RUNNER_TEMP"
+          zip -qr BridgeDeck-unsigned.ipa Payload
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BridgeDeck-iOS-unsigned
+          path: "${{ runner.temp }}/BridgeDeck-unsigned.ipa"
+          retention-days: 14
