@@ -2,7 +2,16 @@
 
 Native, approachable ADB controls for iPhone, with a lightweight Android TV companion.
 
-**Status: 0.1.0 development build.** The controller and discovery companion have source implementations, but real-device and CI build verification are required before a stable release.
+**Status: 0.1.0 prerelease.** The unsigned iPhone IPA and permanently signed Android TV companion have passed CI compilation. Real-device connectivity and feature testing are still required before calling this stable.
+
+## Install and update
+
+- **FlareStore iPhone source:** https://raw.githubusercontent.com/soum91/bridgedeck/main/repo.json
+- **Latest iPhone unsigned IPA:** https://github.com/soum91/bridgedeck/releases
+- **EmberTV Android TV catalog:** https://raw.githubusercontent.com/soum91/embertv/main/repo.json
+- **Signed TV companion releases:** https://github.com/soum91/embertv/releases
+
+The iPhone app requires signing with your own iOS certificate. The Android TV companion is published through EmberTV using its permanent Android signing certificate, so subsequent signed versions can update in place. If an earlier **debug-signed** BridgeDeck TV APK was installed, uninstall that debug build once before installing the permanently signed release. Installing the companion does not grant ADB authority.
 
 ## What's inside
 
@@ -47,7 +56,7 @@ The workflow produces an unsigned IPA for signing with the user's own certificat
     cd androidtv
     gradle :app:assembleDebug
 
-The workflow uploads a test/debug APK. Debug signing may vary across CI runs. For updates in place and EmberTV publication, configure a secure persistent release-signing key before publishing. Never commit private signing keys.
+The source repository workflow uploads a test/debug APK. Use the permanently signed APK published through EmberTV for installations and update continuity. Never commit private signing keys.
 
 ## References and credits
 
@@ -58,9 +67,8 @@ The workflow uploads a test/debug APK. Debug signing may vary across CI runs. Fo
 
 ## Next work
 
-1. Verify both CI builds and fix any compiler failures.
-2. Test the initial authorization and reconnection on an Android TV 12 device.
-3. Add full installed-package metadata and a model-specific safety review.
-4. Add streaming file management, screenshots, batch recovery, and tested default handlers.
-5. Add opt-in AI troubleshooting with redacted logs.
-6. Evaluate a separately authorized encrypted relay for AP-isolated networks.
+1. Test the initial authorization and reconnection on an Android TV 12 device.
+2. Add full installed-package metadata and a model-specific safety review.
+3. Add streaming file management, screenshots, batch recovery, and tested default handlers.
+4. Add opt-in AI troubleshooting with redacted logs.
+5. Evaluate a separately authorized encrypted relay for AP-isolated networks.
