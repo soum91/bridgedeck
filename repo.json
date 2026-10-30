@@ -1,0 +1,9 @@
+{
+  "name": "BridgeDeck",
+  "identifier": "com.soum91.bridgedeck.source",
+  "subtitle": "Android TV management from iPhone",
+  "description": "Native iPhone ADB dashboard with discovery, app management, careful privacy cleanup and guided troubleshooting. Unsigned IPA releases for FlareStore or EmberSign.",
+  "sourceURL": "https://raw.githubusercontent.com/soum91/bridgedeck/main/repo.json",
+  "iconURL": "https://raw.githubusercontent.com/soum91/bridgedeck/main/ios/BridgeDeck/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
+  "apps": []
+}
