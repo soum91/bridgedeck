@@ -36,7 +36,9 @@ enum AdbIdentity {
         ]
         var result: CFTypeRef?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
-        if status == errSecSuccess, let privateKey = result as? SecKey {
+        if status == errSecSuccess {
+            guard let result else { throw NSError(domain: "BridgeDeck.Keychain", code: 3) }
+            let privateKey = result as! SecKey
             guard let publicKey = SecKeyCopyPublicKey(privateKey) else {
                 throw NSError(domain: "BridgeDeck.Keychain", code: 1)
             }
