@@ -5,16 +5,24 @@ on:
     paths:
       - "ios/**"
       - "vendor/SwiftADB/**"
+      - "scripts/sync_ios_repo.py"
       - ".github/workflows/ios.yml"
   workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bridgedeck-ios-release
+  cancel-in-progress: false
 
 jobs:
   build:
     runs-on: macos-15
-    permissions:
-      contents: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - name: Install XcodeGen
         run: brew install xcodegen
       - name: Generate project
@@ -27,12 +35,49 @@ jobs:
             CODE_SIGNING_ALLOWED=NO build
       - name: Package unsigned IPA for user signing
         run: |
+          APP="$RUNNER_TEMP/BridgeDeckBuild/Build/Products/Release-iphoneos/BridgeDeck.app"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleShortVersionString 0.1.0.${{ github.run_number }}" "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion ${{ github.run_number }}" "$APP/Info.plist"
+          /usr/libexec/PlistBuddy -c 'Print :NSLocalNetworkUsageDescription' "$APP/Info.plist" >/dev/null
+          test "$(/usr/libexec/PlistBuddy -c 'Print :CFBundleVersion' "$APP/Info.plist")" = '${{ github.run_number }}'
           mkdir -p "$RUNNER_TEMP/Payload"
-          cp -R "$RUNNER_TEMP/BridgeDeckBuild/Build/Products/Release-iphoneos/BridgeDeck.app" "$RUNNER_TEMP/Payload/"
+          cp -R "$APP" "$RUNNER_TEMP/Payload/"
           cd "$RUNNER_TEMP"
           zip -qr BridgeDeck-unsigned.ipa Payload
       - uses: actions/upload-artifact@v4
         with:
-          name: BridgeDeck-iOS-unsigned
+          name: BridgeDeck-iOS-unsigned-${{ github.run_number }}
           path: "${{ runner.temp }}/BridgeDeck-unsigned.ipa"
           retention-days: 14
+      - name: Publish IPA and update FlareStore JSON feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          BUILD='${{ github.run_number }}'
+          VERSION="0.1.0.$BUILD"
+          TAG="v$VERSION"
+          IPA="$RUNNER_TEMP/BridgeDeck-unsigned.ipa"
+          test -s "$IPA"
+          if ! gh release view "$TAG" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            gh release create "$TAG" "$IPA#BridgeDeck-unsigned.ipa" \
+              --repo "$GITHUB_REPOSITORY" --prerelease \
+              --title "BridgeDeck iPhone $VERSION (unsigned)" \
+              --notes 'Native iPhone ADB interface and Android TV companion discovery. Unsigned IPA: sign with your own certificate in FlareStore or EmberSign. Android TV 12 still requires an authorized ADB-over-TCP endpoint.'
+          fi
+          python3 scripts/sync_ios_repo.py --ipa "$IPA" --build "$BUILD" \
+            --url "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG/BridgeDeck-unsigned.ipa"
+          if git diff --quiet -- repo.json; then
+            echo 'FlareStore feed already up to date.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add repo.json
+          git commit -m "catalog: publish unsigned BridgeDeck iOS $VERSION"
+          for attempt in 1 2 3; do
+            git fetch origin main
+            git -c rebase.autoStash=true rebase origin/main
+            if git push origin HEAD:main; then exit 0; fi
+            if [ "$attempt" -eq 3 ]; then exit 1; fi
+          done
