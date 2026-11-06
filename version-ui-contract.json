@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "targets": [
+    {
+      "name": "iPhone app",
+      "evidence": [
+        {
+          "path": "ios/BridgeDeck/BridgeDeckApp.swift",
+          "contains": [
+            "Installed version",
+            "CFBundleShortVersionString",
+            "CFBundleVersion"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Android TV companion",
+      "evidence": [
+        {
+          "path": "androidtv/app/src/main/java/com/soum91/bridgedeck/tv/MainActivity.kt",
+          "contains": [
+            "Installed version",
+            "getPackageInfo",
+            "versionName"
+          ]
+        }
+      ]
+    }
+  ]
+}
