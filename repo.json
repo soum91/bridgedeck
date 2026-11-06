@@ -16,6 +16,17 @@
       "iconURL": "https://raw.githubusercontent.com/soum91/bridgedeck/main/ios/BridgeDeck/Assets.xcassets/AppIcon.appiconset/AppIcon.png",
       "versions": [
         {
+          "version": "0.1.0.7",
+          "buildVersion": "7",
+          "date": "2026-11-06",
+          "localizedDescription": "Native ADB interface, TV discovery, app manager, recovery-first cleanup and readable errors. Requires authorized ADB over your local network.",
+          "changelog": "Initial unsigned iPhone prerelease. BridgeDeck TV companion is available separately in EmberTV.",
+          "downloadURL": "https://github.com/soum91/bridgedeck/releases/download/v0.1.0.7/BridgeDeck-unsigned.ipa",
+          "size": 832535,
+          "sha256": "daa7cfea5da8f4184407cbc0fd719da1caa7c1efc1c59729749d1b938c13bdad",
+          "minOSVersion": "17.0"
+        },
+        {
           "version": "0.1.0.6",
           "buildVersion": "6",
           "date": "2026-10-30",
