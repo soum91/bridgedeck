@@ -37,6 +37,12 @@ class MainActivity : Activity() {
 
         addText("BridgeDeck", 35f, Color.WHITE, true)
         addText("Your Android TV companion", 19f, Color.rgb(110, 215, 231))
+        val installed = runCatching { packageManager.getPackageInfo(packageName, 0) }.getOrNull()
+        val installedVersion = installed?.versionName ?: "Unknown"
+        val installedBuild = installed?.let {
+            (if (Build.VERSION.SDK_INT >= 28) it.longVersionCode else it.versionCode.toLong()).toString()
+        } ?: "Unknown"
+        addText("Installed version $installedVersion (build $installedBuild)", 14f, Color.LTGRAY)
         addText("This TV is visible to the BridgeDeck iPhone app when both devices can communicate over the local network.", 17f, Color.LTGRAY)
         addText("Device: ${Build.MODEL}   •   Android TV ${Build.VERSION.RELEASE}", 17f, Color.WHITE)
         addText("Discovery is available while the TV is running. For privileged controls, authorize ADB separately on the TV. This companion never opens ADB or runs shell commands.", 15f, Color.LTGRAY)
